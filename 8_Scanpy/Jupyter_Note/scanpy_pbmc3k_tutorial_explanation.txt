@@ -1,0 +1,189 @@
+1. 
+sc.pp.filter_cells(adata, min_genes=200)
+sc.pp.filter_genes(adata, min_cells=3)
+
+why need to run above two line code for single cell rna seq analysis, explain me please
+
+    are used in single-cell RNA sequencing (scRNA-seq) analysis to filter out low-quality cells and lowly expressed genes from the dataset.
+
+    In scRNA-seq, each cell is sequenced separately, resulting in a dataset with many cells and genes. However, not all cells or genes in the dataset are of equal quality or importance. Some cells may have low RNA content or may be in the process of dying, while some genes may be expressed at very low levels and may not provide useful information for downstream analyses.
+
+    By filtering out low-quality cells and lowly expressed genes, we can improve the quality of the scRNA-seq data and increase the accuracy of downstream analyses. The sc.pp.filter_cells() function filters cells based on the number of expressed genes, while the sc.pp.filter_genes() function filters genes based on the number of cells in which they are expressed.
+
+    In particular, the min_genes parameter in sc.pp.filter_cells() sets the minimum number of expressed genes required for a cell to be included in the dataset, while the min_cells parameter in sc.pp.filter_genes() sets the minimum number of cells required for a gene to be included in the dataset.
+
+    Overall, these filtering steps are important for ensuring the quality and reliability of scRNA-seq data and for enabling downstream analyses such as clustering, differential expression analysis, and trajectory inference.
+
+2.  
+    sc.pl.highest_expr_genes(adata, n_top=20, )
+    why need to run above line code for single cell rna seq analysis, explain me please
+
+    The function sc.pl.highest_expr_genes() is used in single-cell RNA sequencing (scRNA-seq) analysis to identify and visualize the top highly expressed genes across all cells in the dataset.
+
+    In scRNA-seq, cells can have different gene expression profiles, with some genes being highly expressed in certain cells and lowly expressed or not expressed at all in others. By identifying the most highly expressed genes across all cells, we can gain insight into the underlying biology of the cells and potentially identify new biomarkers or therapeutic targets.
+
+    The sc.pl.highest_expr_genes() function plots a heatmap of the expression levels of the top n_top genes that are expressed at the highest level across all cells in the dataset. This function can be used to quickly identify genes that are highly expressed in the dataset and to visualize their expression patterns across cells.
+
+    In particular, the n_top parameter sets the number of genes to plot in the heatmap. By default, n_top=20, meaning the top 20 highly expressed genes will be plotted. You can adjust this parameter to plot more or fewer genes depending on your needs.
+
+    Overall, the sc.pl.highest_expr_genes() function is a useful tool for exploratory data analysis in scRNA-seq and can provide valuable insights into the gene expression profiles of cells in the dataset.
+
+3.
+adata.var['mt'] = adata.var_names.str.startswith('MT-')  # annotate the group of mitochondrial genes as 'mt'
+why need to run above line code for single cell rna seq analysis, explain me please
+
+    is used in single-cell RNA sequencing (scRNA-seq) analysis to annotate mitochondrial genes in the dataset.
+
+    Mitochondrial genes are important to annotate because they can indicate potential sources of technical variation and can also be used as quality control metrics. Cells with high levels of mitochondrial gene expression may indicate poor quality or damaged cells, and may need to be filtered out of downstream analyses.
+
+    The code above uses the str.startswith() function in Python to identify genes that start with the prefix 'MT-', which is typically used to denote mitochondrial genes in gene annotations. The resulting boolean vector is stored in a new column called 'mt' in the var attribute of the AnnData object. The value of this column will be True for mitochondrial genes and False for all other genes in the dataset.
+
+    This annotation can be used in downstream analyses to filter out cells with high levels of mitochondrial gene expression or to correct for mitochondrial gene expression in gene expression normalization procedures.
+
+    Overall, annotating mitochondrial genes in scRNA-seq datasets is an important step in quality control and can help ensure the accuracy and reliability of downstream analyses.
+
+    Mitochondria are organelles found within cells that are responsible for producing energy in the form of ATP through oxidative phosphorylation. However, mitochondrial dysfunction can lead to a variety of cellular stresses, including oxidative stress and inflammation, and can contribute to a variety of diseases such as neurodegeneration, diabetes, and cancer.
+
+    In single-cell RNA sequencing (scRNA-seq) data, mitochondrial genes can serve as a proxy for mitochondrial activity or stress. High levels of mitochondrial gene expression can indicate cells that are experiencing mitochondrial dysfunction or damage, which can impact the accuracy and reliability of downstream analyses.
+
+    For example, cells with high levels of mitochondrial gene expression may have reduced RNA quality, which can lead to an increase in technical noise and a decrease in the accuracy of gene expression measurements. In addition, cells with high levels of mitochondrial gene expression may have altered gene expression patterns that are unrelated to the biological question being investigated, which can lead to spurious results.
+
+    To address these issues, it is common practice in scRNA-seq analysis to filter out cells with high levels of mitochondrial gene expression or to correct for mitochondrial gene expression in downstream analyses. This can help improve the quality and reliability of the scRNA-seq data and increase the accuracy of downstream analyses.
+
+
+4.
+
+sc.pp.calculate_qc_metrics(adata, qc_vars=['mt'], percent_top=None, log1p=False, inplace=True)
+why need to run above line code for single cell rna seq analysis, explain me please
+
+    The sc.pp.calculate_qc_metrics() function is used in single-cell RNA sequencing (scRNA-seq) analysis to calculate quality control (QC) metrics for each cell in the dataset. QC metrics are measures of data quality that can be used to identify and remove low-quality or problematic cells from the dataset.
+
+how qc metrics measures the data, Explain me mathmatically and formula?
+
+
+    The function calculates a variety of QC metrics, including the number of expressed genes, the total counts per cell, and the percentage of counts that are derived from mitochondrial genes. The mitochondrial gene percentage is often used as a QC metric in scRNA-seq analysis, as high percentages can indicate low RNA quality or other technical issues.
+
+    The qc_vars parameter specifies which variables to use in calculating the QC metrics. In this case, the mt variable is used, which was previously annotated as the group of mitochondrial genes.
+
+    The percent_top parameter can be used to exclude cells with extremely high expression levels from the calculation of the QC metrics. This can be useful for removing outliers and improving the accuracy of the metrics.
+
+    The log1p parameter can be used to apply a logarithmic transformation to the data before calculating the metrics. This can help normalize the data and reduce the impact of outliers and other sources of variation.
+
+    The inplace parameter specifies whether to modify the adata object in place or return a new object. If inplace=True, the QC metrics will be added to the obs attribute of the adata object.
+
+how qc metrics measures the data, 
+
+6.
+sc.pl.violin(adata, ['n_genes_by_counts', 'total_counts', 'pct_counts_mt'], jitter=0.4, multi_panel=True)
+
+    sc.pl.violin() is a function from the scanpy Python package that generates violin plots to visualize the distribution of QC metrics for cells in a single-cell RNA sequencing (scRNA-seq) dataset. The function takes as input an AnnData object adata that contains the expression data for each cell, and a list of QC metrics that you want to plot.
+
+    The parameters for sc.pl.violin() are as follows:
+
+    adata: An AnnData object containing the expression data for each cell.
+    vars: A list of variable names that correspond to QC metrics that you want to plot.
+    jitter: The amount of jitter to add to the data points along the x-axis to make them more visible. By default, this is set to 0.4.
+    multi_panel: Whether to generate a separate plot for each variable or a single plot with multiple panels. By default, this is set to True, which means that multiple panels will be generated.
+    In the case of the example provided, the sc.pl.violin() function is being used to plot three QC metrics: n_genes_by_counts, total_counts, and pct_counts_mt. These metrics correspond to the number of genes detected per cell, the total number of counts (i.e., expression values) per cell, and the percentage of counts that come from mitochondrial genes per cell, respectively.
+
+    The jitter parameter controls the amount of random noise that is added to the x-axis position of each data point to make the plot more readable. By default, this is set to 0.4, which means that each data point will be randomly shifted by up to 0.4 units along the x-axis.
+
+    The multi_panel parameter controls whether a separate plot is generated for each variable or whether a single plot with multiple panels is generated. By default, this is set to True, which means that a separate plot will be generated for each variable.
+
+    The resulting plot will show the distribution of each QC metric across all cells in the dataset, with each data point representing a single cell. The height of the violin plot corresponds to the density of cells with a particular value of the metric, and the width of the plot represents the range of values for the metric. The median value of the metric is indicated by a horizontal line inside the plot. The violin plot can be useful for identifying any outliers or patterns in the distribution of QC metrics, which can help guide further analysis and data filtering.
+
+
+
+7.
+
+sc.pl.scatter(adata, x='total_counts', y='pct_counts_mt')
+
+explai me the above code.
+
+
+    sc.pl.scatter() is a function from the scanpy Python package that generates a scatter plot to visualize the relationship between two variables in a single-cell RNA sequencing (scRNA-seq) dataset. The function takes as input an AnnData object adata that contains the expression data for each cell, as well as the names of two variables that you want to plot on the x and y axes.
+
+    In the case of the example provided, sc.pl.scatter() is being used to plot the relationship between two QC metrics: total_counts and pct_counts_mt. These metrics correspond to the total number of counts (i.e., expression values) per cell and the percentage of counts that come from mitochondrial genes per cell, respectively.
+
+    The parameters for sc.pl.scatter() are as follows:
+
+    adata: An AnnData object containing the expression data for each cell.
+    x: The name of the variable to plot on the x-axis.
+    y: The name of the variable to plot on the y-axis.
+    The resulting scatter plot will show each cell as a single point, with its position on the plot determined by its values for the x and y variables. In this case, the x variable is total_counts, and the y variable is pct_counts_mt. Cells with higher total_counts values will be located further to the right on the plot, while cells with higher pct_counts_mt values will be located higher up on the plot.
+
+    The scatter plot can be useful for identifying any patterns or relationships between the two variables. In this case, we might expect cells with higher total_counts values to have higher pct_counts_mt values as well, since mitochondrial genes tend to be expressed at higher levels in cells with higher overall gene expression. However, if we see cells with very high pct_counts_mt values but low total_counts values, this might indicate that there is an issue with mitochondrial gene contamination in those cells, and they may need to be filtered out of the dataset.
+
+why x axis corresponding to total_counts and y axis corresponding to pct_counts_mt
+
+    In single-cell RNA sequencing (scRNA-seq), the total number of counts (i.e., expression values) per cell is a measure of the total amount of RNA that was sequenced for that cell. This can be affected by various factors, such as the quality of the RNA, the sequencing depth, and the efficiency of the library preparation and sequencing process. Cells with higher total counts are generally considered to be of higher quality, since they contain more information about the transcriptional profile of the cell.
+
+    On the other hand, the percentage of counts that come from mitochondrial genes per cell (pct_counts_mt) is a measure of the proportion of mitochondrial RNA in the cell. High levels of mitochondrial gene expression can indicate various issues, such as cell stress or contamination with dying cells.
+
+    Therefore, plotting the total_counts variable on the x-axis and the pct_counts_mt variable on the y-axis allows us to examine the relationship between the overall quality of the cells (as indicated by the total counts) and the potential mitochondrial contamination (as indicated by the proportion of mitochondrial RNA). In general, we expect cells with higher total counts to have lower levels of mitochondrial contamination, since there is more RNA in the cell that is not derived from mitochondria. However, cells with very high levels of mitochondrial gene expression can be indicative of mitochondrial contamination, and may need to be filtered out of the dataset.
+
+    Overall, this plot can help us identify problematic cells with high mitochondrial contamination, as well as cells with lower overall RNA content that may have low quality or are otherwise unsuitable for downstream analysis.
+
+8.
+
+sc.pl.scatter(adata, x='total_counts', y='n_genes_by_counts')
+
+explain me the above code.
+why x axis corresponding to total_counts and y axis corresponding to n_genes_by_counts
+
+    The code sc.pl.scatter(adata, x='total_counts', y='n_genes_by_counts') creates a scatter plot of the number of genes detected in each cell ("n_genes_by_counts") versus the total number of counts in each cell ("total_counts") in a single-cell RNA sequencing (scRNA-seq) dataset stored in an AnnData object ("adata").
+
+    In scRNA-seq, "total_counts" refers to the total number of RNA sequencing reads mapped to a cell, and is a measure of the cell's RNA content. "n_genes_by_counts" refers to the number of genes that have been detected in each cell based on the count data. Typically, cells with higher RNA content will have higher total counts and will also detect a higher number of genes.
+
+    By creating a scatter plot of these two variables, we can visualize the relationship between the total RNA content of a cell and the number of genes that are detected. This plot can be used to assess the quality of the scRNA-seq data, as cells with low RNA content or poor sequencing quality may have low total counts and/or detect fewer genes.
+
+
+
+
+
+9.
+
+The command adata = adata[adata.obs.n_genes_by_counts < 2500, :] 
+
+    filters the cells in a single-cell RNA sequencing (scRNA-seq) dataset stored in an AnnData object ("adata") based on the number of genes detected in each cell ("n_genes_by_counts").
+
+    Specifically, this command selects only the cells in the dataset where the value of "n_genes_by_counts" is less than 2500. This is achieved by using boolean indexing: adata.obs.n_genes_by_counts < 2500 returns a boolean mask indicating which cells have "n_genes_by_counts" values less than 2500, and this mask is used to select only those cells from the original AnnData object.
+
+    This type of filtering is commonly used to remove low-quality or empty cells from an scRNA-seq dataset, as cells with very low gene expression are likely to be noise or technical artifacts rather than biologically relevant cells.
+
+
+10.
+adata = adata[adata.obs.pct_counts_mt < 5, :]
+
+
+    The code adata = adata[adata.obs.pct_counts_mt < 5, :] filters the cells in a single-cell RNA sequencing (scRNA-seq) dataset stored in an AnnData object ("adata") based on the percentage of counts derived from mitochondrial genes in each cell ("pct_counts_mt").
+
+    Specifically, this command selects only the cells in the dataset where the value of "pct_counts_mt" is less than 5%. This is achieved by using boolean indexing: adata.obs.pct_counts_mt < 5 returns a boolean mask indicating which cells have "pct_counts_mt" values less than 5%, and this mask is used to select only those cells from the original AnnData object.
+
+    This type of filtering is commonly used to remove cells with high levels of mitochondrial contamination from an scRNA-seq dataset, as mitochondrial genes are not typically of interest in most gene expression analyses and may interfere with downstream analysis. Cells with high "pct_counts_mt" values are likely to be contaminated with mitochondrial RNA or other technical artifacts, and may not represent biologically meaningful cells.
+
+    By filtering out cells with high "pct_counts_mt" values, this command can improve the quality and specificity of downstream analysis in an scRNA-seq dataset. The specific threshold used for filtering (in this case, 5%) may vary depending on the experimental design and sequencing platform.
+
+
+
+11.
+
+
+
+    The sc.pp.normalize_total() function in Scanpy is used to normalize gene expression values in a single-cell RNA sequencing (scRNA-seq) dataset stored in an AnnData object, such that the total counts for each cell add up to a specified target value.
+
+    In particular, the function scales the expression values in each cell by a normalization factor that is calculated based on the sum of expression counts across all genes in the cell. This normalization factor is chosen such that the total counts for each cell in the dataset will be equal to the specified target sum.
+
+    For example, sc.pp.normalize_total(adata, target_sum=1e4) will normalize the expression values in the adata object such that the total counts for each cell will sum to 10,000. This normalization can be useful for comparing gene expression levels between cells or for downstream analyses that require normalized expression values.
+
+    It is important to note that normalization can affect downstream analysis results, and the choice of normalization method and target sum should be carefully considered based on the specific experimental design and analysis goals.
+
+
+
+The sc.pp.normalize_total() function in Scanpy performs a type of normalization called total-count normalization, also known as library-size normalization or reads-per-cell normalization.
+
+In total-count normalization, the expression values for each gene in each cell are divided by a normalization factor that is calculated based on the total count of expression reads for that cell. This scaling ensures that the expression values for each cell have the same total count, making them comparable across cells.
+
+The normalization factor is typically calculated as the total count of expression reads for a given cell divided by a reference value, such as the median or the sum of the total counts for all cells. This scaling ensures that each cell has a similar contribution to the total expression counts of the dataset.
+
+Total-count normalization is a common approach to normalize scRNA-seq datasets, as it can correct for differences in sequencing depth and cell size, and enable comparison of gene expression levels between cells. However, other normalization methods may also be appropriate depending on the specific experimental design and analysis goals.

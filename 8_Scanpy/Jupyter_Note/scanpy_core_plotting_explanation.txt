@@ -1,0 +1,57 @@
+1.
+    sc.set_figure_params(dpi=100, color_map = 'viridis_r')
+    sc.settings.verbosity = 1
+    sc.logging.print_header()
+
+Explain me the code.
+
+
+sc.set_figure_params(dpi=100, color_map='viridis_r'):
+
+This line sets the figure parameters for plotting in Scanpy.
+dpi=100 sets the resolution of the figures to 100 dots per inch.
+color_map='viridis_r' sets the default colormap to 'viridis' but reversed ('_r' suffix) for plotting.
+sc.settings.verbosity = 1:
+
+This line sets the verbosity level of Scanpy's logging system.
+verbosity = 1 sets the verbosity level to "info" mode, which provides more detailed information during the analysis.
+sc.logging.print_header():
+
+This line prints a header message to the console.
+The header typically includes information about the Scanpy version and the underlying libraries being used.
+
+
+2.
+
+    with rc_context({'figure.figsize': (4, 4)}):
+        sc.pl.umap(pbmc, color='CD79A')
+Explain me the code.
+
+The code snippet provided is using the scanpy package to visualize a UMAP plot of single-cell RNA sequencing (scRNA-seq) data. Let's go through each line:
+
+with rc_context({'figure.figsize': (4, 4)})::
+
+This line temporarily modifies the configuration settings of matplotlib, the plotting library used by Scanpy.
+rc_context is a context manager that allows you to modify the matplotlib configuration temporarily within a specific block of code.
+In this case, {'figure.figsize': (4, 4)} is used to set the figure size to 4 inches by 4 inches. This will affect the size of the UMAP plot that is generated.
+sc.pl.umap(pbmc, color='CD79A'):
+
+This line generates a UMAP plot using Scanpy's sc.pl.umap function.
+pbmc is the name of the AnnData object or DataFrame containing the scRNA-seq data.
+color='CD79A' specifies the color of the UMAP plot. Here, 'CD79A' is used as the color parameter. This could represent a gene name or any other annotation column available in the pbmc object. The UMAP plot will be colored based on the values in the specified column.
+Overall, this code snippet sets the figure size to 4 inches by 4 inches using rc_context and then generates a UMAP plot using the sc.pl.umap function from Scanpy. The resulting UMAP plot will visualize the scRNA-seq data, with the points colored based on the values in the specified column (CD79A).
+
+
+
+
+3. 
+
+    The function set.seed(1) is used in programming languages like R to set the starting point for the random number generator. Here's why it can be helpful:
+
+    Reproducibility: When you use random numbers in your code, it can introduce variability in the results. By setting a seed value, you ensure that the sequence of random numbers generated is the same every time you run the code. This is particularly useful when you want to reproduce an experiment or analysis that relies on random numbers. If you don't set a seed, you may get different results each time you run the code, making it harder to compare or replicate your findings.
+
+    Debugging: Setting a seed can also be helpful for debugging purposes. If you encounter an issue or unexpected behavior in your code that involves random number generation, setting a seed allows you to isolate the problem and investigate it further. By fixing the seed, you can repeatedly run the code and observe the same sequence of random numbers, which can aid in identifying the source of the problem.
+
+    Sharing code: When you share your code with others, specifying a seed allows them to obtain the same random numbers as you did when developing or testing the code. This ensures that everyone is working with the same starting point, making it easier to compare and discuss the results.
+
+    It's worth noting that the value you choose for the seed (in this case, 1) doesn't really matter as long as it's consistent. Different seeds will produce different sequences of random numbers, but as long as you use the same seed, you will get the same sequence each time.

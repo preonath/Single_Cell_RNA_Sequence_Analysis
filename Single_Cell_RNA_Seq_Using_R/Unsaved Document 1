@@ -1,0 +1,11 @@
+The code snippet you provided generates a matrix called counts using the rpois() function. Let's break it down step by step:
+
+rpois(100, lambda = 10) generates 100 random numbers from a Poisson distribution with a mean of 10. The Poisson distribution is commonly used to model count data. The lambda parameter specifies the mean of the distribution.
+
+matrix(rpois(100, lambda = 10), ncol=10, nrow=10) takes the 100 random numbers generated and organizes them into a matrix. The ncol argument specifies the number of columns in the matrix, and the nrow argument specifies the number of rows. In this case, it creates a 10x10 matrix.
+
+rownames(counts) <- paste("gene", 1:10, sep = "") assigns row names to the counts matrix. The paste() function concatenates the string "gene" with the numbers 1 to 10, creating row names like "gene1", "gene2", and so on.
+
+colnames(counts) <- paste("cell", 1:10, sep = "") assigns column names to the counts matrix. Similarly, it concatenates the string "cell" with the numbers 1 to 10 to create column names like "cell1", "cell2", and so on.
+
+In summary, the code generates a 10x10 matrix (counts) filled with random numbers drawn from a Poisson distribution with a mean of 10. It then assigns row names as "gene1", "gene2", and so on, and column names as "cell1", "cell2", and so on. This matrix can be used to store and analyze count data for genes and cells in a specific experiment or study.
