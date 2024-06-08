@@ -1,0 +1,11 @@
+beenet_path="/media/chrf/Home03/Trial_Preonath/Single_Cell/Honeycomb_Biotechnologies/Data_Analysis"
+
+ref_path="/media/chrf/Home03/Trial_Preonath/Single_Cell/Honeycomb_Biotechnologies/Data_Analysis"
+
+data_path="/media/chrf/Home03/Trial_Preonath/Single_Cell/Honeycomb_Biotechnologies/Data_Analysis/FASTQs/HC-TestSample1-FBL"
+
+result_path="/media/chrf/Home03/Trial_Preonath/Single_Cell/Honeycomb_Biotechnologies/Data_Analysis/Analysis_Result"
+
+$beenet_path/beenet analyze --sample-name=OurSample --out=$result_path\/MySample --num-barcodes=6000 --ref=$ref_path\/20210603_GRCh38_104 $data_path\/HC-TestSample1-FBL_S1_L001_R1.fastq.gz  $data_path\/HC-TestSample1-FBL_S1_L001_R2.fastq.gz  $data_path\/HC-TestSample1-FBL_S1_L002_R1.fastq.gz  $data_path\/HC-TestSample1-FBL_S1_L002_R2.fastq.gz
+
+

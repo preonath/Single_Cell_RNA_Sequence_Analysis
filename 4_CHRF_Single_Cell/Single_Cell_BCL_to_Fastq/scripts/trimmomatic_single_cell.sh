@@ -1,0 +1,20 @@
+#***********************************************#
+#					Trimmomatic					#
+#***********************************************#
+
+path="/media/chrf/Home04/NextSeq2k/NextSeq2K_Run/Single_Cell_BCL_to_Fastq/Demultiplexed/index_1_Nor_and_index_2_F_Rev_com_Fastq_NS2k_Batch_24_R_SC_i5_only_v2"
+trimmomatic="/home/chrf/programms/Trimmomatic-0.39/trimmomatic-0.39.jar"
+truseq3PE="/home/chrf/programms/Trimmomatic-0.39/adapters/TruSeq3-PE.fa"
+
+for dir in $path/SC*
+do 
+ 	name=`basename $dir  | cut -f 1,2,3,4 -d '_'`
+ 	echo $name
+ 	mkdir -p $dir\/1_Trimmed/
+ 	java -jar $trimmomatic PE -threads 92 $dir\/1_RawData/$name\_*_R1_001.fastq.gz $dir\/1_RawData/$name\_*_R2_001.fastq.gz $dir\/1_Trimmed/$name\_R1_TrmP.fastq.gz /dev/null $dir\/1_Trimmed/$name\_R2_TrmP.fastq.gz /dev/null ILLUMINACLIP:$truseq3PE:2:30:10 CROP:250 
+
+done
+
+
+
+###########

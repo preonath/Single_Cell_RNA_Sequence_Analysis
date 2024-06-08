@@ -1,0 +1,78 @@
+At Test Data with successful analysis:
+
+
+
+chrf@chrf-craze:/media/chrf/Home03/Trial_Preonath/Single_Cell$ ./beenet analyze --sample-name=MySample \
+> --num-barcodes=5000 --ref=20210603_GRCh38_104 \
+> /media/chrf/Home03/Trial_Preonath/Single_Cell/FASTQs/HC-TestSample1-FBL/HC-TestSample1-FBL_S1_L001_R1.fastq.gz \
+> /media/chrf/Home03/Trial_Preonath/Single_Cell/FASTQs/HC-TestSample1-FBL/HC-TestSample1-FBL_S1_L001_R2.fastq.gz \
+> /media/chrf/Home03/Trial_Preonath/Single_Cell/FASTQs/HC-TestSample1-FBL/HC-TestSample1-FBL_S1_L002_R1.fastq.gz \
+> /media/chrf/Home03/Trial_Preonath/Single_Cell/FASTQs/HC-TestSample1-FBL/HC-TestSample1-FBL_S1_L002_R2.fastq.gz
+2024/01/20 21:22:46 analyze: invoked with: ./beenet analyze --sample-name=MySample --num-barcodes=5000 --ref=20210603_GRCh38_104 /media/chrf/Home03/Trial_Preonath/Single_Cell/FASTQs/HC-TestSample1-FBL/HC-TestSample1-FBL_S1_L001_R1.fastq.gz /media/chrf/Home03/Trial_Preonath/Single_Cell/FASTQs/HC-TestSample1-FBL/HC-TestSample1-FBL_S1_L001_R2.fastq.gz /media/chrf/Home03/Trial_Preonath/Single_Cell/FASTQs/HC-TestSample1-FBL/HC-TestSample1-FBL_S1_L002_R1.fastq.gz /media/chrf/Home03/Trial_Preonath/Single_Cell/FASTQs/HC-TestSample1-FBL/HC-TestSample1-FBL_S1_L002_R2.fastq.gz
+2024/01/20 21:22:46 analyze: beginning analysis
+2024/01/20 21:23:45 analyze/annotate: gtf opened, took 59.213219939s
+2024/01/20 21:23:45 analyze/align: starting STAR: STAR-2.7.3a --readFilesIn /dev/stdin --outStd SAM --outFileNamePrefix STARtmp/ --genomeDir /media/chrf/Home03/Trial_Preonath/Single_Cell/20210603_GRCh38_104/STAR-2.7.3a --limitOutSJcollapsed 5000000 --runThreadN 96
+2024/01/20 21:24:45 analyze: IN 8035659 reads (133926/s) ; OUT 4094397 records (68239/s) ; Sys 23017MB (24 GC)
+2024/01/20 21:25:45 analyze: IN 17898086 reads (164373/s) ; OUT 13766567 records (161202/s) ; Sys 24454MB (26 GC)
+2024/01/20 21:26:45 analyze: IN 27794742 reads (164943/s) ; OUT 23462323 records (161595/s) ; Sys 25342MB (28 GC)
+2024/01/20 21:27:45 analyze: IN 37601274 reads (163441/s) ; OUT 33070717 records (160139/s) ; Sys 26195MB (29 GC)
+2024/01/20 21:28:45 analyze: IN 49171854 reads (192841/s) ; OUT 42626865 records (159268/s) ; Sys 26711MB (31 GC)
+2024/01/20 21:29:45 analyze: IN 59029702 reads (164296/s) ; OUT 52277796 records (160847/s) ; Sys 27014MB (32 GC)
+2024/01/20 21:30:45 analyze: IN 68790458 reads (162678/s) ; OUT 61865175 records (159788/s) ; Sys 27370MB (34 GC)
+2024/01/20 21:31:45 analyze: IN 78944292 reads (169230/s) ; OUT 71520166 records (160916/s) ; Sys 27552MB (35 GC)
+2024/01/20 21:32:45 analyze: IN 90437913 reads (191559/s) ; OUT 81236126 records (161931/s) ; Sys 27808MB (37 GC)
+2024/01/20 21:33:45 analyze: IN 100366618 reads (165477/s) ; OUT 90948141 records (161865/s) ; Sys 28040MB (38 GC)
+2024/01/20 21:34:45 analyze: IN 110091482 reads (162080/s) ; OUT 100511665 records (159391/s) ; Sys 28820MB (40 GC)
+2024/01/20 21:35:45 analyze: IN 121218245 reads (185444/s) ; OUT 109892551 records (156346/s) ; Sys 29735MB (41 GC)
+2024/01/20 21:36:45 analyze: IN 131188251 reads (166166/s) ; OUT 119492484 records (159998/s) ; Sys 30998MB (43 GC)
+2024/01/20 21:37:45 analyze: IN 141002521 reads (163570/s) ; OUT 129151641 records (160985/s) ; Sys 31003MB (44 GC)
+2024/01/20 21:38:45 analyze: IN 152208952 reads (186773/s) ; OUT 138931357 records (162994/s) ; Sys 31009MB (45 GC)
+2024/01/20 21:39:45 analyze: IN 162593745 reads (173079/s) ; OUT 148559164 records (160462/s) ; Sys 31009MB (47 GC)
+2024/01/20 21:40:45 analyze: IN 172457080 reads (164388/s) ; OUT 158283591 records (162073/s) ; Sys 31009MB (48 GC)
+2024/01/20 21:41:45 analyze: IN 182382292 reads (165419/s) ; OUT 167913281 records (160494/s) ; Sys 31009MB (49 GC)
+2024/01/20 21:42:45 analyze: IN 193745099 reads (189379/s) ; OUT 177499966 records (159777/s) ; Sys 31009MB (51 GC)
+2024/01/20 21:43:45 analyze: IN 203591804 reads (164111/s) ; OUT 187154021 records (160900/s) ; Sys 31009MB (52 GC)
+2024/01/20 21:44:45 analyze: IN 213009798 reads (156965/s) ; OUT 196419716 records (154427/s) ; Sys 31009MB (53 GC)
+2024/01/20 21:45:45 analyze: IN 222958922 reads (165817/s) ; OUT 205235963 records (146936/s) ; Sys 31009MB (55 GC)
+2024/01/20 21:46:45 analyze: IN 232873466 reads (165241/s) ; OUT 214118723 records (148045/s) ; Sys 31009MB (56 GC)
+2024/01/20 21:47:45 analyze: IN 242078531 reads (153416/s) ; OUT 223180865 records (151034/s) ; Sys 31009MB (57 GC)
+2024/01/20 21:48:45 analyze: IN 251618643 reads (159000/s) ; OUT 232003019 records (147035/s) ; Sys 31010MB (58 GC)
+2024/01/20 21:49:45 analyze: IN 261527511 reads (165146/s) ; OUT 240583288 records (143003/s) ; Sys 31012MB (60 GC)
+2024/01/20 21:50:45 analyze: IN 270528643 reads (150009/s) ; OUT 249407504 records (147061/s) ; Sys 31012MB (61 GC)
+2024/01/20 21:51:45 analyze: IN 279855055 reads (155439/s) ; OUT 258391133 records (149726/s) ; Sys 31013MB (62 GC)
+2024/01/20 21:52:45 analyze: IN 284453024 reads (76628/s) ; OUT 264979216 records (109795/s) ; Sys 31690MB (63 GC)
+2024/01/20 21:53:13 analyze/countmatrix: mapped barcodes / sorting done in 23.526220972s
+2024/01/20 21:53:31 analyze/countmatrix: merging took 18.565244364s
+2024/01/20 21:53:45 analyze: IN 284453024 reads (0/s) ; OUT 264979216 records (0/s) ; Sys 35316MB (64 GC)
+2024/01/20 21:54:11 analyze/countmatrix: RCM/TCM took 39.853834506s
+2024/01/20 21:54:13 analyze/countmatrix: CMSummary took 2.383340975s
+2024/01/20 21:54:16 analyze/countmatrix: QC took 2.373693349s
+2024/01/20 21:54:16 analyze: analysis complete
+
+
+
+At Our Lab Data(CHRF) with some issues:
+
+chrf@chrf-craze:/media/chrf/Home03/Trial_Preonath/Single_Cell$ ./beenet analyze --sample-name=OurSample --out=OurSample\
+> --num-barcodes=6000 --ref=20210603_GRCh38_104 \
+> /media/chrf/Home04/NextSeq2k/Preonath_Data_Share/Single_cell/Single_Cell_NP_NextSeq_Batch_24_R/SC_NP_H_7061/1_RawData/SC_NP_H_7061_S1_L001_R1_001.fastq.gz \
+> /media/chrf/Home04/NextSeq2k/Preonath_Data_Share/Single_cell/Single_Cell_NP_NextSeq_Batch_24_R/SC_NP_H_7061/1_RawData/SC_NP_H_7061_S1_L001_R2_001.fastq.gz 
+panic: runtime error: index out of range [301] with length 256
+
+goroutine 1 [running]:
+interval.bio/honeycomb/format/fastq.(*MagicGeneric).Read(0xc000d00000, {0xc000160000, 0x1000, 0x1000})
+	/usr/local/src/honeycomb/format/fastq/magic.go:296 +0x6cf
+bufio.(*Scanner).Scan(0xc00012e000)
+	/usr/local/go/src/bufio/scan.go:215 +0x865
+interval.bio/honeycomb/format/fastq.(*Reader).NextRead(0xc00011fb80)
+	/usr/local/src/honeycomb/format/fastq/readers.go:126 +0x7d
+interval.bio/honeycomb/bcin.(*BCIn).ParseArgs(0xc00016e120)
+	/usr/local/src/honeycomb/bcin/parse_args.go:91 +0xdcb
+interval.bio/honeycomb/analyze.(*Analyze).ParseArgs(0xc00013c550)
+	/usr/local/src/honeycomb/analyze/analyze.go:163 +0x93a
+main.main()
+	/usr/local/src/honeycomb/cmd/beenet/beenet.go:58 +0x2a7
+
+
+
+

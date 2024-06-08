@@ -1,0 +1,34 @@
+Before Demultiplex 
+
+Undetermined_S0_R1_001.fastq.gz | 15.9 GB | 105640297 	 
+Undetermined_S0_R2_001.fastq.gz	| 16.3 GB | 105640297 
+
+
+After Demultiplex
+
+Raw Data: 
+SC_NP_H_7061_S1_L001_R1_001.fastq.gz | 2.3 GB | 16839827 
+SC_NP_H_7061_S1_L001_R2_001.fastq.gz | 2.3 GB | 16839827 
+
+SC_NP_H_7063_S1_L001_R1_001.fastq.gz | 4.3 GB | 37663850 
+SC_NP_H_7061_S1_L001_R2_001.fastq.gz | 4.1 GB | 37663850 
+
+
+Undetermined_S0_R1_001.fastq.gz | 7.8 GB | 51136620 
+Undetermined_S0_R2_001.fastq.gz | 7.6 GB | 51136620 
+
+After Trimming 
+
+SC_NP_H_7061_S1_L001_R1_TrmP.fastq.gz | 1.6 GB | 16839827 
+SC_NP_H_7061_S1_L001_R2_TrmP.fastq.gz | 1.6 GB | 16839827 
+
+SC_NP_H_7063_S1_L001_R1_TrmP.fastq.gz | 2.5 GB | 34589801 
+SC_NP_H_7063_S1_L001_R2_TrmP.fastq.gz | 2.7 GB | 34589801  
+
+
+
+
+
+
+
+

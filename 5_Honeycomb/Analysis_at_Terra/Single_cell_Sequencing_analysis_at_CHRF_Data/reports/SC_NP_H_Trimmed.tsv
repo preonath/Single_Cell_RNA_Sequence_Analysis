@@ -1,0 +1,3 @@
+Dataset	Group	CellInput	Sample	Species	NumBC	SampleType	R1	R2
+20240117-SC_NP_H	15k	15000	SC_NP_H_7061	hg38	6000	Nasopharyngeal	gs://fc-656fae1b-e7e7-4ed5-af97-0df12beacd26/Analysis_Files/CHRF/SC_NP_H_7061_Trimmed/SC_NP_H_7061_R1_TrmP.fastq.gz	gs://fc-656fae1b-e7e7-4ed5-af97-0df12beacd26/Analysis_Files/CHRF/SC_NP_H_7061_Trimmed/SC_NP_H_7061_R2_TrmP.fastq.gz
+20240117-SC_NP_H	15k	15000	SC_NP_H_7063	hg38	6000	Nasopharyngeal	gs://fc-656fae1b-e7e7-4ed5-af97-0df12beacd26/Analysis_Files/CHRF/SC_NP_H_7063_Trimmed/SC_NP_H_7063_R1_TrmP.fastq.gz	gs://fc-656fae1b-e7e7-4ed5-af97-0df12beacd26/Analysis_Files/CHRF/SC_NP_H_7063_Trimmed/SC_NP_H_7063_R2_TrmP.fastq.gz

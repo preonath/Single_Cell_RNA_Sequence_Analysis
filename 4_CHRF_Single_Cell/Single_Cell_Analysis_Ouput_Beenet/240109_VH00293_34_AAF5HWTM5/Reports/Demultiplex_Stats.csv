@@ -1,0 +1,4 @@
+Lane,SampleID,Index,# Reads,# Perfect Index Reads,# One Mismatch Index Reads,# Two Mismatch Index Reads,% Reads,% Perfect Index Reads,% One Mismatch Index Reads,% Two Mismatch Index Reads
+1,SC_NP_H_7061,AATCGTTA-AATAACGT,0,0,0,0,0.0000,0.0000,0.0000,0.0000
+1,SC_NP_H_7063,AATCGGCG-AATATTGA,0,0,0,0,0.0000,0.0000,0.0000,0.0000
+1,Undetermined,,105640297,105640297,0,0,1.0000,1.0000,0.0000,0.0000

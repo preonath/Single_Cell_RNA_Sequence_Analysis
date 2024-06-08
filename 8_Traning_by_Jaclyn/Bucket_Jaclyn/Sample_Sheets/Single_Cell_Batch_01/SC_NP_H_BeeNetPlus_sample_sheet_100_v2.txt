@@ -1,0 +1,3 @@
+Dataset,Group,CellInput,Sample,Species,NumBC,SampleType,R1,R2
+SC_NP_H,NP_H_7061,15000,SC_NP_H_7061,hg38,15000,Nasopharyngeal_Swab,gs://fc-82bcec84-5b23-45c5-ba4a-fbf7fa91ff1c/FASTQs/SC_NP_H_100/SC_NP_H_7061_R1_TrmP.fastq.gz,gs://fc-82bcec84-5b23-45c5-ba4a-fbf7fa91ff1c/FASTQs/SC_NP_H_100/SC_NP_H_7061_R2_TrmP.fastq.gz
+SC_NP_H,NP_H_7063,15000,SC_NP_H_7063,hg38,15000,Nasopharyngeal_Swab,gs://fc-82bcec84-5b23-45c5-ba4a-fbf7fa91ff1c/FASTQs/SC_NP_H_100/SC_NP_H_7063_R1_TrmP.fastq.gz,gs://fc-82bcec84-5b23-45c5-ba4a-fbf7fa91ff1c/FASTQs/SC_NP_H_100/SC_NP_H_7063_R2_TrmP.fastq.gz

@@ -1,0 +1,14 @@
+2024/01/25 11:25:51 analyze: invoked with: /media/chrf/Home03/Trial_Preonath/Single_Cell/Honeycomb_Biotechnologies/Data_Analysis/beenet analyze --sample-name=SC_NP_H_7061 --out=/media/chrf/Home03/Trial_Preonath/Single_Cell/Honeycomb_Biotechnologies/Data_Analysis/Analysis_Result/SC_NP_H_7061 --num-barcodes=6000 --ref=/media/chrf/Home03/Trial_Preonath/Single_Cell/Honeycomb_Biotechnologies/Data_Analysis/20210603_GRCh38_104 /media/chrf/Home04/NextSeq2k/NextSeq2K_Run/Single_Cell_BCL_to_Fastq/Demultiplexed/index_1_Nor_and_index_2_F_Rev_com_Fastq_NS2k_Batch_24_R_SC_i5_only_v2/SC_NP_H_7061/1_Trimmed/SC_NP_H_7061_R1_TrmP.fastq.gz /media/chrf/Home04/NextSeq2k/NextSeq2K_Run/Single_Cell_BCL_to_Fastq/Demultiplexed/index_1_Nor_and_index_2_F_Rev_com_Fastq_NS2k_Batch_24_R_SC_i5_only_v2/SC_NP_H_7061/1_Trimmed/SC_NP_H_7061_R2_TrmP.fastq.gz
+2024/01/25 11:25:51 analyze: beginning analysis
+2024/01/25 11:26:59 analyze/annotate: gtf opened, took 1m8.01860036s
+2024/01/25 11:26:59 analyze/align: starting STAR: STAR-2.7.3a --readFilesIn /dev/stdin --outStd SAM --outFileNamePrefix STARtmp/ --genomeDir /media/chrf/Home03/Trial_Preonath/Single_Cell/Honeycomb_Biotechnologies/Data_Analysis/20210603_GRCh38_104/STAR-2.7.3a --limitOutSJcollapsed 5000000 --runThreadN 96
+2024/01/25 11:27:59 analyze: IN 4168086 reads (69467/s) ; OUT 1956308 records (32605/s) ; Sys 22357MB (24 GC)
+2024/01/25 11:28:59 analyze: IN 12560788 reads (139877/s) ; OUT 6654550 records (78303/s) ; Sys 24440MB (26 GC)
+2024/01/25 11:29:59 analyze: IN 21534016 reads (149553/s) ; OUT 11790129 records (85592/s) ; Sys 25027MB (28 GC)
+2024/01/25 11:30:51 analyze/countmatrix: mapped barcodes / sorting done in 1.265144848s
+2024/01/25 11:30:52 analyze/countmatrix: merging took 1.773993976s
+2024/01/25 11:30:59 analyze: IN 27542221 reads (100135/s) ; OUT 15883331 records (68219/s) ; Sys 29586MB (30 GC)
+2024/01/25 11:31:04 analyze/countmatrix: RCM/TCM took 11.918278875s
+2024/01/25 11:31:04 analyze/countmatrix: CMSummary took 67.767115ms
+2024/01/25 11:31:05 analyze/countmatrix: QC took 395.093353ms
+2024/01/25 11:31:05 analyze: analysis complete

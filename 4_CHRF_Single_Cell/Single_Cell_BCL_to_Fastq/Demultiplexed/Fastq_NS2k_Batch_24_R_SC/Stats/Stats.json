@@ -1,0 +1,71 @@
+{
+ "Flowcell" : "AAF5HWTM5",
+ "RunNumber" : 34,
+ "RunId" : "240109_VH00293_34_AAF5HWTM5",
+ "ReadInfosForLanes" : [
+  {
+   "LaneNumber" : 1,
+   "ReadInfos" : [
+    {
+     "Number" : 1,
+     "NumCycles" : 301,
+     "IsIndexedRead" : false
+    },
+    {
+     "Number" : 1,
+     "NumCycles" : 8,
+     "IsIndexedRead" : true
+    },
+    {
+     "Number" : 2,
+     "NumCycles" : 8,
+     "IsIndexedRead" : true
+    },
+    {
+     "Number" : 2,
+     "NumCycles" : 301,
+     "IsIndexedRead" : false
+    }
+   ]
+  }
+ ],
+ "ConversionResults" : [
+  {
+   "LaneNumber" : 1,
+   "TotalClustersRaw" : 161436672,
+   "TotalClustersPF" : 105640297,
+   "Yield" : 63595458794,
+   "DemuxResults" : [
+
+   ],
+   "Undetermined" : {
+    "NumberReads" : 105640297,
+    "Yield" : 63595458794,
+    "ReadMetrics" : [
+     {
+      "ReadNumber" : 1,
+      "Yield" : 31797729397,
+      "YieldQ30" : 12809679968,
+      "QualityScoreSum" : 746399704329,
+      "TrimmedBases" : 0
+     },
+     {
+      "ReadNumber" : 2,
+      "Yield" : 31797729397,
+      "YieldQ30" : 20776746955,
+      "QualityScoreSum" : 889259157734,
+      "TrimmedBases" : 0
+     }
+    ]
+   }
+  }
+ ],
+ "UnknownBarcodes" : [
+  {
+   "Lane" : 1,
+   "Barcodes" : {
+    "unknown" : 105639400
+   }
+  }
+ ]
+}

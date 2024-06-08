@@ -1,0 +1,27 @@
+Thank you Jaclyn  
+
+Here, I have shared all the information that we used to analyze our single-cell trimmed data (250bp).
+
+Input folder path and the files contain at "Workspacesbch-rc-billing/BeeNetPLUS_CZI"
+
+Folder_Path = "fc-82bcec84-5b23-45c5-ba4a-fbf7fa91ff1c/FASTQs/"
+Files:
+	SC_NP_H_7061_R1_TrmP.fastq.gz
+	SC_NP_H_7061_R2_TrmP.fastq.gz
+	SC_NP_H_7063_R1_TrmP.fastq.gz
+	SC_NP_H_7063_R2_TrmP.fastq.gz
+	
+	
+Samplesheet_Path = "fc-82bcec84-5b23-45c5-ba4a-fbf7fa91ff1c/Sample_SheetsSC_NP_H_BeeNetPlus_sample_sheet.txt"
+	
+	
+Output_folder_by_beenet = "fc-82bcec84-5b23-45c5-ba4a-fbf7fa91ff1c/BeeNetPlus_Output/SC_NP_H/"
+
+
+
+Then I have run BeenetPlus pipeline from Workspacesbch-rc-billing/CZI Nasal Mucosa under cellranger_workflow
+
+The parameter that have been used 
+fc-82bcec84-5b23-45c5-ba4a-fbf7fa91ff1c/BeeNetPlus_Output/SC_NP_H/Analysis-20240125-100-200/HCB-scRNAseq-SC_NP_H.html
+
+https://storage.cloud.google.com/fc-82bcec84-5b23-45c5-ba4a-fbf7fa91ff1c/BeeNetPlus_Output/SC_NP_H/Analysis-20240125-100-200/HCB-scRNAseq-SC_NP_H.html?authuser=0

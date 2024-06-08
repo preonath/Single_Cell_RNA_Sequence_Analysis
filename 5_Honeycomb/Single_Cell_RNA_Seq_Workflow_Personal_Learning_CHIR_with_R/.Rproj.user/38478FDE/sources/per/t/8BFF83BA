@@ -1,0 +1,26 @@
+{
+    "id": "8BFF83BA",
+    "path": "~/Desktop/CHRF_Project/Single_Cell_RNA_Sequence_Analysis/Single_Cell_RNA_Seq_Workflow_Personal_Learning_CHIR/scripts/Single_Cell_RNA_Seq_Workflow.R",
+    "project_path": "scripts/Single_Cell_RNA_Seq_Workflow.R",
+    "type": "r_source",
+    "hash": "384370440",
+    "contents": "",
+    "dirty": false,
+    "created": 1704694622659.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "106,0",
+        "scrollLine": "93"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1704771610,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1704771610778,
+    "read_only": false,
+    "read_only_alternatives": []
+}

@@ -1,0 +1,398 @@
+---
+title: | 
+  | Honeycomb Tips and Tricks 
+  | for scRNA-seq Downstream Analysis v1.0
+author: Honeycomb Bioinformatics Team
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    theme: united
+    highlight: tango
+    toc: true
+    number_sections: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+---
+# Introduction
+
+The below code document are tips and tricks for common downstream analysis next steps. Each section contains information on how to perform scRNA-seq analysis, including identification of low quality cells, merging and removal of clusters/cells, reclustering, changing cell type annotations and identities, etc. 
+
+Please contact support@honeycomb.bio for all questions. 
+
+# Package Installation and library loading
+The below packages needs to be installed prior to running this vignette. Code for package installation is below. There may be additional dependencies required by these packages you may have to install depending on your R environment. 
+```{r packageinstall, eval=F}
+install.packages("htmltools")
+install.packages("tidyverse")
+install.packages("patchwork")
+install.packages("plyr")
+install.packages('Seurat')
+if (!require("BiocManager", quietly = TRUE)){
+  install.packages("BiocManager")
+}
+BiocManager::install("UCell")
+install.packages("ggpubr")
+BiocManager::install("SingleCellExperiment")
+BiocManager::install("scuttle")
+BiocManager::install("celldex")
+install.packages("DT")
+if (!requireNamespace("remotes", quietly = TRUE)) {
+  install.packages("remotes")
+}
+install.packages("HGNChelper")
+```
+Load libraries using the code below:
+```{r libraries, warning = FALSE}
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(patchwork)
+  library(plyr)
+  library(Seurat)
+  library(UCell)
+  library(ggpubr)
+  library(SingleCellExperiment)
+  library('scuttle')
+  library(celldex)
+  library(DT)
+  library(scales)
+  library(HGNChelper)
+})
+```
+
+# Copying BeeNet/BeeNetPLUS output files from Google Cloud
+The code below loads your R object from the Google Cloud Platform Bucket. You will need to replace code where outlined below:
+```{r copyfiles, eval = F, echo = T}
+
+system("gsutil -m cp -r gs://resources.honeycomb.bio/honeycomb-public-scripts/HC-logo.png . ")
+system("mkdir -p data")
+
+#Replace the URL with the link to the R object output by BeeNetPLUS or your own downstream R object. Navigate to your Google Cloud output directory and locate the .tgz object or R object and copy the path into the code below:
+
+system("gsutil -m cp gs://hcb-external-pipeline-testing/20230426-TestData/Analysis-20230426-300-600/Analysis-20230426-300-600.tgz ./data")
+
+#Unzip the file if it is a .tgz file
+system("tar -zxf data/*tgz -C ./data")
+```
+Next, load your R object into the environment. This tutorial is based on an R object named "obj". For **BeeNetPLUSv1.0** users, change the name of the object using the code below. 
+```{r loadobject}
+#Replace the file path for the R object and load in the R object
+load("./data/Analysis-20230426-300-600/FullDataset-20230426-TestData.Rdata")
+
+#This should load a Seurat object called umi_seurat and several other data frames and variables that contain pipeline parameters and other quality control metrics. 
+
+# Rename the umi_seurat object obj for this analysis 
+obj<- umi_seurat
+rm(umi_seurat)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(root.dir = "./data")
+```
+
+# Metadata Tips and Tricks
+## Collecting metadata from your Seurat Object
+``` {r metadata}
+# The code below creates a data frame of metadata included in the Seurat object
+metadata <- rownames_to_column(obj@meta.data, "cellids")
+
+datatable(metadata)
+```
+
+## Setting the Ident of Cells
+You can set the Cell Identity to any column in the object metadata. After clustering, the Ident is automatically the cluster number, but this can be changed to cell type, sample name, or group depending on the downstream analysis to be performed.
+``` {r clustering, warning=FALSE, message=FALSE}
+##Set the Identity of the cells to the seurat cluster
+Idents(obj)<- obj$seurat_clusters
+DimPlot(obj, reduction="umap")
+```
+
+## Changing the Order of Idents
+Change the "level" of the metadata parameter "seurat_clusters" so that the numbers are in order. Releveling can be performed for any metadata and changed at any time.
+``` {r releveling, warning=FALSE, message =FALSE}
+obj$seurat_clusters<- factor(obj$seurat_clusters, levels = c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"))
+Idents(obj)<- obj$seurat_clusters
+
+DimPlot(obj, reduction="umap")
+```
+
+# Clustering Tips and Tricks
+## Identifying and Removing Low Quality Clusters
+A high quality UMAP contains:  
+
+- Clusters that are distinct from one another.  
+- Clusters that are not sample specific (unless biologically relevant).  
+
+``` {r HQclusterhighlight, warning=FALSE, message =FALSE}
+DimPlot(obj,pt.size = 0.2, cells.highlight=WhichCells(obj, idents = 4), cols.highlight = "orange", cols= "grey")
+```
+
+A low quality cluster on a UMAP may:  
+
+- Be diffuse around the UMAP. These clusters may be defined by RBC contamination, high mitochondrial gene expression, or abnormally low genes/transcripts.  
+- Be in the middle of or bridge two larger, unrelated clusters. This could be indicative of multiplets.  
+
+``` {r LQclusterhighlight, warning=FALSE, message =FALSE}
+DimPlot(obj,pt.size = 0.2, cells.highlight=WhichCells(obj, idents = 12), cols.highlight = "orange", cols= "grey")
+```
+
+In this example, we think Cluster 12 might be low quality due to its positioning on the UMAP. We also want to check to see if there are distinct marker genes that define cluster 12, as well as the overall numbers of genes, transcripts, and mitochondrial reads
+
+``` {r LQQC, warning=FALSE, message =FALSE}
+
+#Get the median QC parameters for the whole object
+median(obj$nCount_RNA)
+median(obj$nFeature_RNA)
+median(obj$percent.mito)
+
+#Isolate c12 and get the QC parameters
+c12<- subset(obj, subset = seurat_clusters=="12")
+median(c12$nCount_RNA)
+median(c12$nFeature_RNA)
+median(c12$percent.mito)
+
+#Find Markers for just c12
+markers12 <- FindMarkers(object = obj, ident.1 = 12)
+datatable(markers12[1:5,])
+```
+
+As cluster 12 does not isolate on its own, has no biologically significant marker genes (log2fc <-0.58 or >0.58) and has significantly lower genes and transcripts per cell than the rest of the object, this cluster is a good candidate for removal. Please note that certain cell types (e.g. granulocytes) have lower numbers of genes and transcripts than others, and therefore looking at marker genes and UMAP positioning is necessary to help determine whether a cluster should be removed.
+
+``` {r c12remove, warning=FALSE, message =FALSE}
+
+#Remove Cluster 12
+obj<- subset(obj, subset = seurat_clusters !="12")
+
+#Recluster
+obj <- NormalizeData(obj)
+obj <- ScaleData(obj)
+obj <- FindVariableFeatures(obj, selection.method = "vst", nfeatures = 2000)
+obj<-RunPCA(obj, verbose = FALSE)
+obj<-RunUMAP(obj, dims=1:30,verbose = FALSE)
+obj<- FindNeighbors(obj,verbose = FALSE)
+obj<- FindClusters(obj, verbose = FALSE)
+obj=BuildClusterTree(obj,reorder=TRUE,reorder.numeric=TRUE)
+
+#Add scTransform as another option
+obj <- SCTransform(obj, vars.to.regress = "percent.mito", verbose = FALSE)
+obj<-RunPCA(obj, verbose = FALSE)
+obj<-RunUMAP(obj, dims=1:18,verbose = FALSE)
+obj<- FindNeighbors(obj,verbose = FALSE)
+obj<- FindClusters(obj, verbose = FALSE)
+obj=BuildClusterTree(obj,reorder=TRUE,reorder.numeric=TRUE)
+obj$seurat_clusters<- obj$tree.ident
+
+DimPlot(obj, reduction="umap")
+```
+
+Iterate through removing low quality clusters one at a time until high quality cells remain. Be sure to re-do any Violin Plots, QC plots/tables, and UMAPs with the updated Seurat object. 
+
+``` {r qcbysample, warning=FALSE, message=FALSE}
+
+#Redo the QC 
+qc_metrics_sample<- function(obj){
+  I=obj@meta.data$orig.ident
+  Reads=obj@meta.data$ExonReads
+  ReadsM=obj@meta.data$reads.mapped
+  ReadsT=obj@meta.data$reads.Total
+  trans=obj@meta.data$nCount_RNA
+  Genes=obj@meta.data$nFeature_RNA
+  Mito=obj@meta.data$percent.mito
+  Complexity=obj@meta.data$Complexity
+  nSamples=length(unique(obj$groupSamp))
+  readEC=vector(mode="double",length=nSamples)
+  readsTot=totReads.df
+  readsTotalSamples=colnames(readsTot)
+  names(readEC)=sort(unique(obj$groupSamp))
+  readTC=readEC
+  readMC=readEC
+  transC=readEC
+  geneC=readEC
+  mitoC=readEC
+  nCells=readEC
+  compl=readEC
+  readsCellTotal=readEC
+  readsSampleTotal=readEC
+  FracCellReads=readEC
+  readsSampleMapped=readEC
+  readsSampleFiltered=readEC
+  readsSampleExon=readEC
+  percExon=readEC
+  percFilt=readEC
+  nF=readEC
+  r=readEC
+  v1=readEC
+  v2=readEC
+  v3=readEC
+  date=readEC
+  sT=readEC
+  DS=readEC
+  G=readEC
+  T=readEC
+  BC=readEC
+  seqsat=readEC
+  sampleName=readEC
+  sampleGroup=readEC
+  sampleslist<-sort(unique(obj$orig.ident))
+
+  for (x in 1:nSamples) {
+      readTC[x]=median(ReadsT[is.na(match(I,sampleslist[x]))==0])
+      readEC[x]=median(Reads[is.na(match(I,sampleslist[x]))==0])
+      readMC[x]=median(ReadsM[is.na(match(I,sampleslist[x]))==0])
+      transC[x]=median(trans[is.na(match(I,sampleslist[x]))==0])
+      geneC[x]=median(Genes[is.na(match(I,sampleslist[x]))==0])
+      mitoC[x]=median(Mito[is.na(match(I,sampleslist[x]))==0])
+      compl[x]=median(Complexity[is.na(match(I,sampleslist[x]))==0])
+      nCells[x]=sum(is.na(match(I,sampleslist[x]))==0)
+      readsCellTotal[x]=sum(ReadsT[is.na(match(I,sampleslist[x]))==0])
+      sampleName[x]=sampleslist[x]
+      readsSampleTotal[x]=readsTot[1,is.na(match(readsTotalSamples,sampleslist[x]))==0]
+      FracCellReads[x]=readsCellTotal[x]/readsSampleTotal[x]
+      readsSampleMapped[x]=readsTot[3,is.na(match(readsTotalSamples,sampleslist[x]))==0]
+      readsSampleFiltered[x]=readsTot[2,is.na(match(readsTotalSamples,sampleslist[x]))==0]
+      readsSampleExon[x]=readsTot[4,is.na(match(readsTotalSamples,sampleslist[x]))==0]
+      percExon[x]=readEC[x]/readTC[x]*100
+      percFilt[x]=readsSampleFiltered[x]/readsSampleTotal[x]
+      date[x]=gsub("-","",Sys.Date())
+      G[x]=nGeneI
+      T[x]=nTranI
+      seqsat[x]=1-(sum(trans[is.na(match(I,sampleslist[x]))==0] / sum(ReadsM[is.na(match(I,sampleslist[x]))==0])))
+  }
+
+  clustInfo=data.frame(date,sampleName,G, T, readTC,
+                       readMC,readEC,transC,geneC,mitoC,nCells,
+                       compl,readsSampleTotal,readsSampleFiltered,
+                       readsSampleMapped,readsSampleExon,readsCellTotal,
+                       FracCellReads,percExon,percFilt, seqsat)
+  
+  colnames(clustInfo)=c("AnalysisDate", "SampleID", "GeneThreshold",
+                        "TranscriptThreshold", "TotalReads", "MappedReads",
+                        "ExonReads", "nTrans", "nGenes", "percMito" ,"nCells",
+                        "Complexity",  "SampleTotalReads", "SampleFilteredReads",
+                        "SampleMappedReads", "SampleExonReads", "HQCellsTotalReads",
+                        "FracReadsHQCells", "PctExon", "FracPassFilter", "SeqSat")
+  
+  write.table(clustInfo,"SamplesMetrics.txt",sep="\t",col.names=NA)
+  
+  return(clustInfo)
+}
+
+sample_metrics<- qc_metrics_sample(obj)
+
+datatable(sample_metrics)
+```
+## Merging Clusters
+If two or more clusters have the same marker genes that define them, with no distinct marker genes distinguishing between either of the two clusters (see below section for details on how to compare two clusters), these clusters can be merged to form one cluster. We do not recommend overwriting the original clustering; rather, we suggest making a new column in the metadata and reassigning clusters there.
+
+``` {r mergeclusters, warning=FALSE, message=FALSE}
+#Copy the original clusters to a new column called new.cluster.ids, releveling to make sure they are in the correct order
+obj$new.cluster.ids<- factor(obj$seurat_clusters, levels = c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"))
+
+#Set the cell identities to the new cell clusters 
+Idents(obj)<- obj$new.cluster.ids
+
+#Set new Idents to combine original clusters 6 and 7 into one cluster (6), and then renumbering the rest so that they go in order
+new.cluster.ids<- c("1", "2", "3", "4", "5", "6", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17")
+names(new.cluster.ids) <- levels(obj)
+
+obj <- RenameIdents(obj, new.cluster.ids)
+DimPlot(obj)
+```
+
+Note that when you rename, merge, or remove clusters, subsequent analyses will need to be repeated. Rerun plot and figure generation, marker gene analysis and cluster QC parameters with the new cluster numbers for consistency in your data!
+
+# Marker Analysis Tips and Tricks
+
+We recommend using a min.pct of 0.25 to find marker genes. This ensures that markers are frequently expressed in at least one group.  
+
+## Find markers for just one cluster
+``` {r oneclustermarker, warning=FALSE, message=FALSE}
+#Find markers for cluster 1 (ident.1)
+Idents(obj)<- obj$seurat_clusters
+cluster1.markers <- FindMarkers(object = obj, ident.1 = 1, min.pct = 0.25)
+datatable(cluster1.markers)
+```
+## Directly compare two clusters
+``` {r onevs2clustermarker, warning=FALSE, message=FALSE}
+#Compare clusters 1 and 2 directly
+Idents(obj)<- obj$seurat_clusters
+cluster1v2.markers <- FindMarkers(object = obj, ident.1 = 1, ident.2 = 2, min.pct = 0.25)
+datatable(cluster1v2.markers)
+```
+## Compare cell types
+``` {r bvmclustermarker, warning=FALSE, message=FALSE}
+#Compare markers in B cells versus Monocytes
+Idents(obj)<- obj$cell_type
+clusterbvm.markers <- FindMarkers(object = obj, ident.1 = "Naive B cells", ident.2 = "Monocyte", min.pct = 0.25)
+datatable(clusterbvm.markers)
+```
+## Compare cell types by group
+``` {r celltypesbygroup, warning=FALSE, message=FALSE}
+#Compare markers in B cells in 7.5k group versus the 30k group
+Idents(obj)<- obj$cell_type
+group.markers <- FindMarkers(object = obj, ident.1 = "7.5k", ident.2 = "30k", group.by = "group", subset.ident = "Naive B cells", min.pct = 0.25)
+datatable(group.markers)
+```
+
+# Cell Type Annotation Tips and Tricks
+## Reassigning Cell Types
+We do not recommend overwriting the original cell type annotation; rather, we suggest making a new column in the metadata and reassigning cell types there. In this object, cells that were annotated as "Neutrophil-2" and "Neutrophil-3" are actually monocytes, based on their positioning on the UMAP and marker gene expression. Here we will clean up the data and reassign these cells. Be sure to re-perform all downstream analyses pertaining to cell types after reassignment!
+
+``` {r reassign, warning=FALSE, message=FALSE}
+obj$cell_type_new<- obj$cell_type
+obj$cell_type_new[obj$cell_type == "Neutrophil-2"]<- "Monocyte"
+obj$cell_type_new[obj$cell_type == "Neutrophil-3"]<- "Monocyte"
+DimPlot(obj, group.by = "cell_type_new")
+```
+
+# Saving your final R object
+Be sure to save your final object! Include all metadata tables and environment variables that you want to include in your final saved R object Here we saved our object and metadata as a new file called FilteredDataset-<DATASETNAME>.Rdata.
+
+``` {r save, warning=FALSE, message=FALSE}
+# The code below preserves environment variables for BeeNetPLUSv1.0. 
+
+save(obj, totReads.df, dataNames, input, sampletype, known_markers,nFastq, len, refs, beeV, wdlV, dataset, nGeneI, nTranI, clustGroupCountsN, clustCountsN2, clustCountsN3, clustGroupCountsN2, file=paste0("FilteredDataset-", dataset, ".Rdata"))
+```
+
+Not all the variables above are present for BeeNet users, but consider at least saving the final Seurat object, for downstream use. The following code saves only the Seurat object. Any other variables, functions, or data frames made in this tutorial will have to be regenerated in future analysis if not saved. 
+
+```{r save_BeeNetOnly, eval=FALSE}
+save(obj, "FilteredDataset-NAMEofDATASET-SeuratObjectOnly.Rdata)
+```
+
+# R Session
+```{r SessionInfo, echo=FALSE, results = 'asis'}
+df_session_platform <- devtools::session_info()$platform %>% 
+  unlist(.) %>% 
+  as.data.frame(.) %>% 
+  rownames_to_column(.)
+
+colnames(df_session_platform) <- c("Setting", "Value")
+
+knitr::kable(
+  df_session_platform, 
+  booktabs = T, 
+  align = "l",
+  caption = "R Session Info", # complete caption for main document
+) 
+ 
+```
+# Package Info
+
+```{r PackageInfo, echo=FALSE, results = 'asis'}
+df_session_packages <- devtools::session_info()$packages %>% 
+  as.data.frame(.) %>% 
+  filter(attached == TRUE) %>% 
+  dplyr::select(loadedversion, date) %>% 
+  rownames_to_column
+
+colnames(df_session_packages) <- c("Package", "Loaded version", "Date")
+
+
+knitr::kable(
+  df_session_packages, 
+  booktabs = T, 
+  align = "l",
+  caption = "R Package Info", # complete caption for main document
+) 

@@ -1,0 +1,27 @@
+# 1.1 Package installation and loading
+
+# install.packages("tidyverse")
+# install.packages("Seurat")
+# install.packages("HGNChelper")
+# install.packages("openxlsx")
+# install.packages("DT")
+
+
+# Load the libraries with the code below.
+
+library(tidyverse)
+library(Seurat)
+library(HGNChelper)
+library(openxlsx)
+library(DT)
+
+# Copying BeeNet/BeeNetPLUS output files from Google Cloud
+
+system("mkdir -p data")
+
+#Replace the URL with the link to the R object output by BeeNetPLUS or your own downstream R object. 
+#Navigate to your Google Cloud output directory and locate the .tgz object or R object and copy the path into the code below:
+system("gsutil -m cp gs://path-to-data ./data")
+
+#Unzip the file
+system("tar -zxf data/*tgz -C ./data")

@@ -1,0 +1,15 @@
+2024/01/25 11:44:10 analyze: invoked with: /media/chrf/Home03/Trial_Preonath/Single_Cell/Honeycomb_Biotechnologies/Data_Analysis/beenet analyze --sample-name=SC_NP_H_7063 --out=/media/chrf/Home03/Trial_Preonath/Single_Cell/Honeycomb_Biotechnologies/Data_Analysis/Analysis_Result/SC_NP_H_7063 --num-barcodes=6000 --ref=/media/chrf/Home03/Trial_Preonath/Single_Cell/Honeycomb_Biotechnologies/Data_Analysis/20210603_GRCh38_104 /media/chrf/Home04/NextSeq2k/NextSeq2K_Run/Single_Cell_BCL_to_Fastq/Demultiplexed/index_1_Nor_and_index_2_F_Rev_com_Fastq_NS2k_Batch_24_R_SC_i5_only_v2/SC_NP_H_7063/1_Trimmed/SC_NP_H_7063_R1_TrmP.fastq.gz /media/chrf/Home04/NextSeq2k/NextSeq2K_Run/Single_Cell_BCL_to_Fastq/Demultiplexed/index_1_Nor_and_index_2_F_Rev_com_Fastq_NS2k_Batch_24_R_SC_i5_only_v2/SC_NP_H_7063/1_Trimmed/SC_NP_H_7063_R2_TrmP.fastq.gz
+2024/01/25 11:44:10 analyze: beginning analysis
+2024/01/25 11:44:57 analyze/annotate: gtf opened, took 46.939051207s
+2024/01/25 11:44:57 analyze/align: starting STAR: STAR-2.7.3a --readFilesIn /dev/stdin --outStd SAM --outFileNamePrefix STARtmp/ --genomeDir /media/chrf/Home03/Trial_Preonath/Single_Cell/Honeycomb_Biotechnologies/Data_Analysis/20210603_GRCh38_104/STAR-2.7.3a --limitOutSJcollapsed 5000000 --runThreadN 96
+2024/01/25 11:45:57 analyze: IN 4285373 reads (71422/s) ; OUT 363489 records (6058/s) ; Sys 22151MB (25 GC)
+2024/01/25 11:46:57 analyze: IN 13822336 reads (158948/s) ; OUT 3470683 records (51786/s) ; Sys 24243MB (27 GC)
+2024/01/25 11:47:57 analyze: IN 23489055 reads (161110/s) ; OUT 5797195 records (38775/s) ; Sys 24842MB (29 GC)
+2024/01/25 11:48:57 analyze: IN 33262246 reads (162885/s) ; OUT 9062639 records (54424/s) ; Sys 25206MB (30 GC)
+2024/01/25 11:49:57 analyze: IN 42985672 reads (162055/s) ; OUT 11591451 records (42146/s) ; Sys 25398MB (32 GC)
+2024/01/25 11:50:27 analyze/countmatrix: mapped barcodes / sorting done in 1.070540506s
+2024/01/25 11:50:28 analyze/countmatrix: merging took 1.407303367s
+2024/01/25 11:50:35 analyze/countmatrix: RCM/TCM took 6.534790692s
+2024/01/25 11:50:35 analyze/countmatrix: CMSummary took 37.658142ms
+2024/01/25 11:50:35 analyze/countmatrix: QC took 531.168371ms
+2024/01/25 11:50:35 analyze: analysis complete

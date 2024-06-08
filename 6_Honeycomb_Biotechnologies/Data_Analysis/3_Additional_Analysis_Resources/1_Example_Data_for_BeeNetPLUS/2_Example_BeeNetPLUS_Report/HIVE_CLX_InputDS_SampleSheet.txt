@@ -1,0 +1,15 @@
+Dataset	Group	CellInput	Sample	Species	NumBC	SampleType	R1	R2
+20230426-TestData	7.5k	7500	MySample1	hg38	5000	PBMC	gs://hcb-external-pipeline-testing/20230426-TestData/fastqs/MySample1_R1.fastq.gz	gs://hcb-external-pipeline-testing/20230426-TestData/fastqs/MySample1_R2.fastq.gz
+20230426-TestData	7.5k	7500	MySample2	hg38	5000	PBMC	gs://hcb-external-pipeline-testing/20230426-TestData/fastqs/MySample2_R1.fastq.gz	gs://hcb-external-pipeline-testing/20230426-TestData/fastqs/MySample2_R2.fastq.gz
+20230426-TestData	30k	30000	MySample3	hg38	20000	PBMC	gs://hcb-external-pipeline-testing/20230426-TestData/fastqs/MySample3_R1.fastq.gz	gs://hcb-external-pipeline-testing/20230426-TestData/fastqs/MySample3_R2.fastq.gz
+20230426-TestData	30k	30000	MySample4	hg38	20000	PBMC	gs://hcb-external-pipeline-testing/20230426-TestData/fastqs/MySample4_R1.fastq.gz	gs://hcb-external-pipeline-testing/20230426-TestData/fastqs/MySample4_R2.fastq.gz
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								

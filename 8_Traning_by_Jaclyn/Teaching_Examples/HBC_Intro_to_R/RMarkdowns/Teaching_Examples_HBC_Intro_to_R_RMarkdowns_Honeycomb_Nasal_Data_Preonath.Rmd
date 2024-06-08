@@ -1,0 +1,495 @@
+---
+title: "20240303_BCH_CHRF_analysis"
+author: "Jaclyn Long"
+date: "3/3/2024"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("~/Pediatric_Swabs/20231207_HC_analysis/CHRF")
+
+```
+
+Packages 
+```{r}
+#read in count matrices in tsv format 
+library(data.table) 
+
+#essential for single cell analysis 
+library(Seurat)
+
+#data wrangling 
+library(dplyr)
+library(tibble)
+
+#plotting 
+library(ggplot2) 
+library(cowplot)
+
+```
+
+
+Before we start, copy the folder called "TCM_files" into your environment. You find it in the google bucket -> Teaching Examples -> BeeNetPlus_Output
+
+
+First, define a list of the samples, a list of the paths to the TCM.tsv.gz file for each sample
+
+```{r}
+sample_list <- c("BCH_B019_P1", 
+                 "BCH_B019_P2", 
+                 "CHRF_7061", 
+                 "CHRF_7063", 
+                 "CHRF_7067", 
+                 "CHRF_7074", 
+                 "CHRF_7075")
+
+#make sure the sample paths are in the same order as the sample list above! 
+sample_paths <- c("./TCM_files/20230925-BCH-B019-P001_20240227043450_TCM.tsv.gz", 
+                  "./TCM_files/20230925-BCH-B019-P002_20240227042837_TCM.tsv.gz", 
+                  "./TCM_files/SC-NP-H-7061_20240228152519_TCM.tsv.gz", 
+                  "./TCM_files/SC-NP-H-7063_20240228152706_TCM.tsv.gz", 
+                  "./TCM_files/SC-NP-H-7067_20240303033408_TCM.tsv.gz", 
+                  "./TCM_files/SC-NP-H-7074_20240303033159_TCM.tsv.gz", 
+                  "./TCM_files/SC-NP-H-7075_20240303033819_TCM.tsv.gz")
+
+```
+
+Then we we will investigate one of the count matrices and create a Seurat Object from it. 
+```{r}
+#first investigate what the counts matrix looks like for one sample 
+sample <- sample_list[4]
+path <- sample_paths[4]
+
+#use the fread() function from the data.table package, which is able to handle large matrices very efficiently
+counts <- fread(path)
+
+#display the first 5 rows and first 5 columns of the counts matrix 
+counts[1:5, 1:5]
+
+#note that the column names are the cell barcodes, but the gene names are stored in the first column which has the column name "_". We need to change this so the gene symbols are the row names. We will use the tibble function: 
+
+counts <- counts %>% 
+  column_to_rownames("_")
+
+#check the first 5 rows and columsn again 
+counts[1:5, 1:5]
+
+#now our matrix is ready to be converted to a seurat object. 
+test_obj <- CreateSeuratObject(counts = counts)
+test_obj
+
+```
+
+To apply this to all of our samples, we will use a for loop.
+
+First, we will create an empty list. 
+
+We will then go through our list of samples. For each sample: 
+1. Load the count matrix and edit the row names as before 
+2. Create a seurat object 
+3. Add the sample ID to the metadata of the seurat object 
+4. Add this seurat object to the empty list, such that when the loop is complete, we have a list of objects from each sample. 
+
+Finally, merge the list of objects into one object for further analysis. 
+
+
+```{r}
+#create an empty list 
+obj_list <- list()
+
+
+for(i in 1:length(sample_list)){
+  sample = sample_list[i] 
+  path = sample_paths[i]
+  
+  #read in the counts matrix using the path for this sample 
+  sample_counts <- fread(path)
+  
+  #change the first column, which contains the gene symbols, to the row names of the count matrix 
+  sample_counts <- sample_counts %>% 
+    column_to_rownames("_")
+  
+  #create a seurat object from the counts matrix
+  sample_obj <- CreateSeuratObject(sample_counts)
+  
+  #add sample to the metadata of the object 
+  sample_obj <- AddMetaData(sample_obj, sample, col.name = "Sample")
+  
+  #add the sample object to the list 
+  obj_list[[sample]] <- sample_obj
+  
+}
+
+
+#merge the list of seurat objects into one object 
+#the "add.cell.ids" argument requires a list of ids that is the same length as the list of objects, and will add this id as a prefix to each cell barcode 
+
+
+obj_merged <- merge(x = obj_list[[1]],
+                    y = obj_list[2:length(obj_list)],
+                    add.cell.ids = sample_list)
+obj_merged
+
+#using "Cells" we can see the column names of the count matrix - note that the sample name has been added as a prefix to the cell barcode 
+head(Cells(obj_merged))
+
+#"table" will tell you how many cells are in each category for a metadata variable
+#right now this is based on the "NumBC" input for the BeeNetPlus workflow - the number of barcodes that we told the software to look at during the alignment and generation of the count matrix 
+table(obj_merged$Sample)
+
+```
+
+
+Quality control & filtering 
+
+First take a quick peak at the QC metrics. Note that this will be biased because we have forced BeeNetPlus to include a specific number of barcodes, so many of the points on this plot will not be real live cells. 
+
+```{r}
+#Add percent mitochondrial as a metadata variable 
+obj_merged[["percent.mt"]] <- PercentageFeatureSet(obj_merged, pattern = "^MT-")
+
+#plot quality control metrics prior to filtering 
+VlnPlot(obj_merged, features = "nFeature_RNA", group.by = "Sample", log = TRUE )
+VlnPlot(obj_merged, features = "nCount_RNA", group.by = "Sample", log = TRUE )
+VlnPlot(obj_merged, features = "percent.mt", group.by = "Sample")
+
+
+
+```
+
+Filter object based on the number of unique transcripts (nCount_RNA), the number of genes (nFeature_RNA), and the percent mitochondrial 
+```{r}
+obj_filtered <- subset(obj_merged, nCount_RNA > 200 & nFeature_RNA > 150 & percent.mt < 35)
+
+#now view the number of cells per sample after filtering 
+table(obj_filtered$Sample)
+
+#repeat the QC plots after filtering 
+VlnPlot(obj_filtered, features = "nFeature_RNA", group.by = "Sample", log = TRUE )
+VlnPlot(obj_filtered, features = "nCount_RNA", group.by = "Sample", log = TRUE )
+VlnPlot(obj_filtered, features = "percent.mt", group.by = "Sample")
+```
+
+
+It looks like the two samples that were run in the first batch, 7061 and 7063, did not have many cells passing QC filters. Let's remove these for futher analysis. 
+
+We will create a final object called "obj"
+```{r}
+#define our final list of samples to look at 
+final_sample_list <- sample_list[c(1:2, 5:7)]
+
+#subset the object to only samples in the final list 
+obj <- subset(obj_filtered, Sample %in% final_sample_list)
+
+#now view the number of cells for each sample again 
+table(obj$Sample)
+
+```
+
+
+Now I want to create some nice-looking plots of the QC metrics for the samples that we will keep 
+
+Define color palettes 
+```{r}
+pal_site <- c("palevioletred1", "steelblue")
+
+pal_samples <- c( "lightpink2", "maroon", "lightblue3", "steelblue", "dodgerblue4")
+
+```
+
+```{r}
+
+#create a dataframe with the number of cells for every sample 
+sample_df <- as.data.frame(table(obj$Sample)) %>% 
+  rename(Sample = Var1, Number_Cells = Freq)
+
+#barplot of the number of cells per sample 
+p1 <- ggplot(sample_df, 
+       aes(x = Sample, y = Number_Cells, fill = Sample)) +
+  geom_bar(stat = "identity", width = .6, color = "black") + 
+  scale_fill_manual(values = pal_samples) + 
+  scale_y_continuous(expand = c(0,0), limits = c(0,6000)) + 
+  ggtitle("Number of Cells Passing QC") + 
+  theme_classic() + 
+  theme(axis.text.x = element_text(size = 12, color = "black", angle = 45, hjust = .9, vjust = .9), 
+        axis.text.y = element_text(size = 12, color = "black"), 
+        plot.title = element_text(face = "bold", color = "black", size = 16, hjust = 0.5 ), 
+        legend.position = "none", 
+        axis.title.x = element_blank(), 
+        axis.title.y = element_blank(), 
+        plot.margin = unit(c(.5,.5,.5,.5), "cm")) +
+  geom_text(aes(label = Number_Cells), vjust = -0.2, size = 3)
+
+p2 <- VlnPlot(obj, features = "nFeature_RNA", log = TRUE, group.by = "Sample", cols = pal_samples) * 
+  theme(axis.title.x = element_blank(), legend.position = "none") 
+
+p3 <- VlnPlot(obj, features = "nCount_RNA", log = TRUE, group.by = "Sample", cols = pal_samples) * 
+  theme(axis.title.x = element_blank(), legend.position = "none") 
+
+p4 <- VlnPlot(obj, features = "percent.mt",  group.by = "Sample", cols = pal_samples) * 
+  theme(axis.title.x = element_blank(), legend.position = "none") 
+
+
+#use the cowplot package to combine these four packages in a grid 
+plot_grid(p1, p2, p3, p4, ncol = 2) 
+
+
+#save the combined plot as a pdf 
+
+pdf(file = "./Plots/qc_by_sample.pdf", 
+    width = 12, 
+    height = 8)
+
+plot_grid(p1, p2, p3, p4, ncol = 2)
+
+dev.off()
+
+
+```
+
+
+Now we are ready for data pre-processing. 
+
+Here we are using SCTransform, which includes the normalization, feature selection, and scaling steps. 
+
+SCTransform works to account for technical factors that may be contributing to variation, including the number of reads or the number of genes per cell. We can also specify additional factors that we want it to account for. Here, I am specifying that I also wish to regress out any variation due to the % of mitochondrial reads. 
+
+Then we run PCA and visualize the elbow plot to determine the number of principal components to use going forward. 
+```{r}
+obj <- SCTransform(obj, vars.to.regress = "percent.mt")
+
+obj <- RunPCA(obj) 
+ElbowPlot(obj, ndims = 40)
+
+#save elbow plot 
+
+pdf(file = "./Plots/elbow_plot.pdf", 
+    width = 5, 
+    height = 4) 
+
+ElbowPlot(obj, ndims = 40) 
+
+dev.off()
+
+
+```
+
+Now we will identify the clusters and plot them in 2-dimensional space using UMAP 
+```{r}
+
+obj <- FindNeighbors(obj, dims = 1:23)
+obj <- FindClusters(obj, resolution = 0.5, verbose = FALSE)
+
+obj <- RunUMAP(obj, dims = 1:23)
+
+
+```
+
+Plot our UMAP in a few different ways: 
+
+First plot the UMAP with the seurat clusters. Note that after you run FindClusters(), the cluster number will automatically be set in the 'active.ident' slot of the Seurat Object. This means that any plot we make will be divided by these clusters. So if we run DimPlot() without specifying the group.by argument, it will default to the active.ident 
+
+```{r}
+DimPlot(obj)
+
+#here I am adding an additional metadata variable with the site ID, so I can split the plot by this. 
+#Use the "grepl" function for pattern matching 
+obj$Site <- ifelse(grepl("BCH", obj$Sample) == TRUE, "BCH", "CHRF")
+table(obj$Site, obj$Sample)
+
+#Plot UMAPs using the group.by function, which will color the points based on the identification 
+#shuffle = TRUE is important to run so that the cells are plotted in a random order, and one group is not just plotted on top of the other 
+DimPlot(obj, group.by = "Site", shuffle = TRUE, cols = pal_site)
+DimPlot(obj, group.by = "Sample", shuffle = TRUE, cols = pal_samples)
+
+
+#if instead we want to create a new plot for each condition, we can use the 'split.by' argument 
+DimPlot(obj, split.by = "Site", label = TRUE)
+DimPlot(obj, split.by = "Sample", label = TRUE, ncol = 3)
+
+
+```
+
+Find the marker genes for our clusters. FindAllMarkers does a 1 vs all comparison, so you will get the genes that define that cluster compared to all of the others 
+
+Then, save that result as a csv file 
+```{r}
+markers <- FindAllMarkers(obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+
+write.csv(markers, 
+          file = "./Analysis_Output/res0.5_marker_genes.csv")
+
+```
+      
+      
+Based on the marker genes, we can then define some annotations for our clusters 
+```{r}
+obj$Coarse_Annotation <- NA
+obj$Coarse_Annotation[obj$seurat_clusters == 0] <- "Secretory" 
+obj$Coarse_Annotation[obj$seurat_clusters == 1] <- "Dynein-high Ciliated" 
+obj$Coarse_Annotation[obj$seurat_clusters == 2] <- "Ciliated"  
+obj$Coarse_Annotation[obj$seurat_clusters == 3] <- "T Cells" 
+obj$Coarse_Annotation[obj$seurat_clusters == 4] <- "B Cells" 
+obj$Coarse_Annotation[obj$seurat_clusters == 5] <- "S100-high Secretory" 
+obj$Coarse_Annotation[obj$seurat_clusters == 6] <- "Cytotoxic T/NK" 
+obj$Coarse_Annotation[obj$seurat_clusters == 7] <- "Monocytes/Macrophages" 
+obj$Coarse_Annotation[obj$seurat_clusters == 8] <- "Squamous"  
+obj$Coarse_Annotation[obj$seurat_clusters == 9] <- "Ionocytes" 
+obj$Coarse_Annotation[obj$seurat_clusters == 10] <- "Proliferating"
+
+
+#set the order of the clusters 
+obj$Coarse_Annotation <- factor(obj$Coarse_Annotation, levels = c("Secretory", 
+                                                                  "S100-high Secretory", 
+                                                                  "Squamous", 
+                                                                  "Ciliated", 
+                                                                  "Dynein-high Ciliated", 
+                                                                  "Ionocytes", 
+                                                                  "Monocytes/Macrophages", 
+                                                                  "B Cells", 
+                                                                  "T Cells", 
+                                                                  "Cytotoxic T/NK",
+                                                                  "Proliferating"
+                                                                  ))
+
+
+
+
+```
+
+It's helpful to keep a record of why we called certain clusters certain things. Here we will generate a plot showing some of the genes used to define each cluster. 
+```{r}
+cell_type_markers <- c( 
+  #secretory 
+  "PSCA", 
+  "MUC4", 
+  "AQP3", 
+  
+  "PIGR", 
+  "KRT19", 
+  "BPIFA1",
+  "S100P", 
+  "S100A9", 
+  
+  #squamous 
+  "SPRR3", 
+  "ANXA1", 
+  "KRT6A", 
+  "KRT17",
+  
+#ciliated 
+"CAPS",
+"TSPAN1", 
+"PRDX5", 
+
+"DNAAF1",
+"DNAH12", 
+
+#ionocytes 
+"CFTR", 
+"RARRES2", 
+"SCNN1B",
+
+#mac 
+"LYZ", 
+"CD83", 
+"HLA-DRA",
+
+#B 
+"MS4A1", 
+"BANK1",
+
+#T 
+"CD3D", 
+"CCL5", 
+"KLF6", 
+
+#cyto
+"GNLY", 
+"GZMA", 
+
+#
+"MKI67", 
+"TOP2A",
+"CENPF"
+
+  )
+
+
+#generate a stacked violin plot of these select marker genes over the cell types we defined. Using the stack = TRUE argument, we can plot multiple genes on a single plot 
+VlnPlot(obj, features = cell_type_markers, group.by = "Coarse_Annotation", fill.by = "ident",  stack = TRUE, pt.size = 0) + 
+  theme(legend.position = "none", axis.title.y = element_blank()) + 
+  labs(title = "Cell Type Marker Genes")
+
+
+#another way to do this is a dotplot: 
+DotPlot(obj, features = cell_type_markers, group.by = "Coarse_Annotation", dot.min = .01) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = .9, vjust = .9))
+
+```
+
+
+Now we will plot the cell type annotations on our UMAP 
+```{r}
+DimPlot(obj, group.by = "Coarse_Annotation",  shuffle = TRUE) + 
+  theme(axis.text = element_blank(), 
+        axis.ticks = element_blank())
+
+
+#save our umap plot! 
+pdf(file = "./Plots/umap_by_celltype.pdf", 
+    width = 8, 
+    height = 5) 
+
+DimPlot(obj, group.by = "Coarse_Annotation",  shuffle = TRUE) + 
+  theme(axis.text = element_blank(), 
+        axis.ticks = element_blank())
+
+dev.off()
+
+
+
+
+```
+
+
+Exercise: 
+1. Define your own palette of 11 colors. 
+2. Plot the UMAP by cell type using these colors 
+3. Add your name as a title for this plot 
+4. Save the plot 
+
+```{r}
+
+
+```
+
+
+Exercise: 
+Try defining the clusters using a resolution of 0.8. How many clusters do you have now? Where is this information stored in your seurat object? 
+```{r}
+
+
+```
+
+
+Exercise: 
+Make a violin plot of one (or multiple) of the marker genes used to define the clusters. How does the expression of this gene change: 
+across cell types? 
+across site? 
+across samples? 
+
+```{r}
+
+
+```
+
+
+
+
+
+
+
+
+      
