@@ -1,0 +1,137 @@
+# Cell 1
+
+import scanpy as sc
+import matplotlib.pyplot as plt
+import os
+
+# Assuming combined_adata is already created and harmonized
+# Update infection_status for each batch based on the observed data
+
+# Initialize the infection_status column to False
+combined_adata.obs['infection_status'] = False
+
+# Ren et al.: Healthy status is False, otherwise True
+combined_adata.obs.loc[combined_adata.obs['batch'] == 'Ren et al.', 'infection_status'] = \
+    saliva_adata1.obs.loc[combined_adata.obs['batch'] == 'Ren et al.'].index.map(lambda idx: saliva_adata1.obs.at[idx, 'CoVID-19 severity'] not in ['Healthy'])
+
+# Ziegler et al.: Positive status is True, otherwise False
+combined_adata.obs.loc[combined_adata.obs['batch'] == 'Ziegler et al.', 'infection_status'] = \
+    adata2.obs.loc[combined_adata.obs['batch'] == 'Ziegler et al.'].index.map(lambda idx: adata2.obs.at[idx, 'SARSCoV2_PCR_Status'] == 'pos')
+
+# Yoshida et al.: Positive status is True, otherwise False
+combined_adata.obs.loc[combined_adata.obs['batch'] == 'Yoshida et al.', 'infection_status'] = \
+    nasal_cavity_adata3.obs.loc[combined_adata.obs['batch'] == 'Yoshida et al.'].index.map(lambda idx: nasal_cavity_adata3.obs.at[idx, 'COVID_status'] == 'Positive')
+
+# Ensure the infection_status column is of categorical dtype
+combined_adata.obs['infection_status'] = combined_adata.obs['infection_status'].astype('category')
+
+
+Cell 2
+
+
+
+
+# Ensure combined_adata and other necessary variables are already defined or loaded
+
+# Assuming combined_adata and other necessary variables are already initialized or loaded
+
+# Define functions to check and display batch indices without rerunning Cell 1
+
+def display_batch_indices(adata, batch_name):
+    indices = adata.obs.loc[adata.obs['batch'] == batch_name].index
+    display(indices)
+
+###### **Ren et al.** #####
+ren_indices = display_batch_indices(combined_adata, 'Ren et al.')
+
+###### **Ziegler et al** #####
+ziegler_indices = display_batch_indices(combined_adata, 'Ziegler et al.')
+
+###### **Yoshida et al.** #####
+yoshida_indices = display_batch_indices(combined_adata, 'Yoshida et al.')
+
+# Method 1: Using savefig directly after plotting with sc.pl.umap's save option
+def plot_infected_cells_method1(adata, focus_batch, output_file):
+    sc.pl.umap(adata, color='infection_status', show=False, save=output_file)
+    plt.close()
+
+
+Cell 3
+combined_adata.obs['infection_status'] = combined_adata.obs['infection_status'].astype('category')
+
+
+# Method 2: Using plt.savefig after plotting
+def plot_infected_cells_method2(adata, focus_batch, output_file):
+    fig, ax = plt.subplots()
+    colors = ['red' if (batch == focus_batch and infected) else 'lightgray' for batch, infected in zip(adata.obs['batch'], adata.obs['infection_status'])]
+    sc.pl.umap(adata, color=colors, show=False, ax=ax)
+    plt.title(f"UMAP Highlighting Infected Cells in {focus_batch}")
+    plt.savefig(output_file, dpi=300)
+    plt.close()
+
+# Method 3: Ensuring the figure is not closed prematurely
+def plot_infected_cells_method3(adata, focus_batch, output_file):
+    fig, ax = plt.subplots()
+    colors = ['red' if (batch == focus_batch and infected) else 'lightgray' for batch, infected in zip(adata.obs['batch'], adata.obs['infection_status'])]
+    sc.pl.umap(adata, color=colors, show=False, ax=ax)
+    plt.title(f"UMAP Highlighting Infected Cells in {focus_batch}")
+    fig.savefig(output_file, dpi=300)
+    plt.close(fig)
+
+
+
+
+
+
+
+Cell 4
+
+
+
+
+
+
+import os
+import scanpy as sc
+import matplotlib.pyplot as plt
+
+def plot_infected_cells_method1(adata, focus_batch, output_file):
+    sc.pl.umap(adata, color='infection_status', show=False)
+    plt.title(f'UMAP Infected Cells - {focus_batch}')  # Set a title for clarity
+    plt.tight_layout()  # Adjust layout for better fitting
+    plt.savefig(output_file, dpi=300, bbox_inches='tight')
+    plt.close()
+
+# Define the output directory
+output_dir = './'  # Current directory
+
+# Generate and save UMAP plots focusing on each batch using different methods
+batches = combined_adata.obs['batch'].unique()
+for batch in batches:
+    # Construct the output file name with batch and method identifier
+    batch_filename = batch.replace(" ", "_")
+    method_identifier = 'method1'
+    output_file1 = os.path.join(output_dir, f'umap_infected_cells_{method_identifier}_{batch_filename}.png')
+    
+    # Call plotting function for method 1
+    plot_infected_cells_method1(combined_adata, batch, output_file1)
+
+
+Cell 5
+
+
+import os
+import scanpy as sc
+import matplotlib.pyplot as plt
+
+# Define the output directory
+output_dir = './'  # Current directory
+
+# Optionally display a combined plot highlighting infection status
+sc.pl.umap(combined_adata, color='infection_status', show=False)
+plt.title('UMAP Infection Status Combined')  # Set a title for clarity
+plt.tight_layout()  # Adjust layout for better fitting
+plt.savefig(os.path.join(output_dir, 'umap_infection_status_combined.png'), dpi=300, bbox_inches='tight')
+plt.close()
+
+
